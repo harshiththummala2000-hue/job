@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Browse Jobs — JobBoard{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Find Your Next Job</h1>
+  <p>Browse hundreds of job listings from top companies.</p>
+
+  <form class="search-form" method="GET" action="{{ url_for('index') }}">
+    <input type="text" name="q" placeholder="Job title, keyword, or company" value="{{ query }}" />
+    <input type="text" name="location" placeholder="Location" value="{{ location }}" />
+    <select name="job_type">
+      <option value="">All Types</option>
+      {% for t in ["Full-Time", "Part-Time", "Contract", "Remote", "Internship"] %}
+        <option value="{{ t }}" {% if job_type == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Search</button>
+    {% if query or location or job_type %}
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">Clear</a>
+    {% endif %}
+  </form>
+</section>
+
+<section class="results">
+  <p class="result-count">
+    {{ jobs|length }} job{{ 's' if jobs|length != 1 else '' }} found
+  </p>
+
+  {% if jobs %}
+    <div class="job-list">
+      {% for job in jobs %}
+        <a href="{{ url_for('job_detail', job_id=job['id']) }}" class="job-card">
+          <div class="job-card-main">
+            <h2>{{ job['title'] }}</h2>
+            <p class="company">{{ job['company'] }}</p>
+          </div>
+          <div class="job-card-meta">
+            <span class="badge">{{ job['job_type'] }}</span>
+            <span class="location">{{ job['location'] }}</span>
+            {% if job['salary'] %}
+              <span class="salary">{{ job['salary'] }}</span>
+            {% endif %}
+            <span class="date">{{ job['posted_at'][:10] }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No jobs found. <a href="{{ url_for('post_job') }}">Be the first to post one!</a></p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
