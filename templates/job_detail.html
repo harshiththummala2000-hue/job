@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ job['title'] }} at {{ job['company'] }} — JobBoard{% endblock %}
+
+{% block content %}
+<div class="detail-header">
+  <a href="{{ url_for('index') }}" class="back-link">&larr; Back to listings</a>
+  <div class="detail-title">
+    <h1>{{ job['title'] }}</h1>
+    <p class="company">{{ job['company'] }}</p>
+  </div>
+  <div class="detail-meta">
+    <span class="badge">{{ job['job_type'] }}</span>
+    <span class="location">{{ job['location'] }}</span>
+    {% if job['salary'] %}
+      <span class="salary">{{ job['salary'] }}</span>
+    {% endif %}
+    <span class="date">Posted {{ job['posted_at'][:10] }}</span>
+  </div>
+</div>
+
+<div class="detail-body">
+  <div class="description">
+    <h2>Job Description</h2>
+    <p>{{ job['description'] | replace('\n', '<br>') | safe }}</p>
+  </div>
+
+  <div class="apply-box">
+    <h2>How to Apply</h2>
+    <p>Send your resume and cover letter to:</p>
+    <a href="mailto:{{ job['contact_email'] }}" class="btn btn-primary apply-btn">
+      Apply — {{ job['contact_email'] }}
+    </a>
+  </div>
+</div>
+
+<form method="POST" action="{{ url_for('delete_job', job_id=job['id']) }}"
+      class="delete-form"
+      onsubmit="return confirm('Delete this job listing?')">
+  <button type="submit" class="btn btn-danger">Delete Listing</button>
+</form>
+{% endblock %}
